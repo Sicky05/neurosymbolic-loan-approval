@@ -81,6 +81,7 @@ class RuleTests(unittest.TestCase):
             (0, 'RIFIUTATO'), (999.99, 'RIFIUTATO'),
             (1000, 'APPROVATO'), (1000000, 'APPROVATO'),
             (1000000.01, 'SOSPESA_PER_VERIFICA'),
+            (1000001, 'SOSPESA_PER_VERIFICA'),
         )
         for risk in ('BASSO', 'ALTO'):
             for income, verdict in cases:
@@ -111,6 +112,27 @@ class RuleTests(unittest.TestCase):
         self.assertEqual(output.getvalue().count('VALUTAZIONE PRESTITO'), 2)
         self.assertIn('Verdetto:', output.getvalue())
 
+    def test_guardrail_end_to_end(self):
+        redditi = (-1, 1000001)
+
+        for reddito in redditi:
+            with self.subTest(reddito=reddito):
+                testo = (
+                    "Lavoro fisso e nessun debito, situazione ottimale. "
+                    f"Il mio reddito mensile è di {reddito} euro."
+                )
+
+                risultato = esperto.valuta_prestito(
+                    testo,
+                    sid=f"guardrail-{reddito}"
+                )
+
+                self.assertEqual(risultato['reddito'], reddito)
+                self.assertEqual(risultato['rischio'], 'BASSO')
+                self.assertEqual(
+                    risultato['verdetto'],
+                    'SOSPESA_PER_VERIFICA'
+                )
 
 if __name__ == '__main__':
     unittest.main()
