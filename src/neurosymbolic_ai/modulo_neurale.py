@@ -90,7 +90,7 @@ def _modello():
     X = vectorizer.fit_transform([
         normalizza_testo_per_rischio(frase) for frase in frasi
     ])
-    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, random_state=1).fit(X, etichette)
+    clf = MLPClassifier(solver='lbfgs', random_state=1).fit(X, etichette)
     return vectorizer, clf
 
 # ESTRAZIONE DEL REDDITO
