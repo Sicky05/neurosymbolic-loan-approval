@@ -9,8 +9,12 @@ dependencies = [
     "durable-rules==2.0.28",
 ]
 
+[project.optional-dependencies]
+gui = ["reportlab==4.2.5", "pillow>=9,<11", "chardet>=5,<6"]
+
 [project.scripts]
 neurosymbolic-ai = "neurosymbolic_ai:main"
+neurosymbolic-ai-gui = "neurosymbolic_ai.gui:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]

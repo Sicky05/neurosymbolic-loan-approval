@@ -21,6 +21,33 @@ motivazione. In alternativa: `uv run --locked python -m neurosymbolic_ai.sistema
 `durable-rules` contiene un'estensione C: se manca una wheel compatibile,
 l'installazione richiede un compilatore C e gli strumenti di sviluppo Python.
 
+## Interfaccia grafica e PDF
+
+La GUI usa Tkinter (incluso nell'interprete Windows; su Linux richiede il
+pacchetto Tk della distribuzione) e un extra opzionale per esportare PDF:
+
+```powershell
+uv sync --locked --extra gui
+uv run --locked --extra gui neurosymbolic-ai-gui
+```
+
+In alternativa: `uv run --locked --extra gui python -m neurosymbolic_ai.gui`.
+Il comando originale `neurosymbolic-ai` continua ad avviare i due esempi CLI.
+
+Scrivi il colloquio, premi **Valuta prestito**, quindi **Esporta PDF** e scegli
+il percorso. La valutazione avviene in background. Modificare il testo invalida
+il risultato precedente e richiede una nuova valutazione prima di esportare.
+Il PDF contiene identificativo pratica, reddito, rischio, verdetto e la
+motivazione XAI originale restituita da `valuta_prestito()`. Questa motivazione
+descrive le regole del sistema esperto, non i pesi o i contributi della rete.
+L'esportazione non ricalcola la valutazione. I dati restano locali.
+
+Compatibilità verificata prima dell'installazione sui metadati PyPI:
+ReportLab 4.2.5 richiede Python >=3.7,<4; Pillow 10.4.0 richiede >=3.8;
+chardet 5.2.0 richiede >=3.7. L'extra vincola Pillow <11 e chardet <6;
+il lockfile mantiene le versioni risolte. I font per accenti ed euro sono
+inclusi in ReportLab. Nessuna dipendenza GUI/PDF viene importata dalla CLI.
+
 ## Uso da Python
 
 ```python
@@ -66,6 +93,11 @@ inglesi; non interpreta negazioni, periodi temporali o composizioni di entrate.
 uv run --locked python -m unittest discover -s tests -v
 ```
 
+Per includere tutte le verifiche GUI/PDF, usa
+`uv run --locked --extra gui python -m unittest discover -s tests -v`.
+Queste verifiche richiedono l'extra `gui` e, per Tkinter, un display disponibile;
+in assenza di tali requisiti i relativi test sono segnalati come saltati.
+
 I test coprono parsing e normalizzazione, input vuoti e sconosciuti, tutte le
 regole con soglie inclusive/esclusive, riuso delle pratiche e comando dimostrativo.
 Le regole sono testate con rischio controllato, senza dipendere dalle predizioni
@@ -76,6 +108,9 @@ del piccolo modello.
 - `src/neurosymbolic_ai/modulo_neurale.py`: dataset, modello ed estrattore.
 - `src/neurosymbolic_ai/sistema_esperto.py`: regole, valutazione e demo.
 - `src/neurosymbolic_ai/__init__.py`: versione e ingresso del comando.
+- `src/neurosymbolic_ai/gui.py`: interfaccia Tkinter e valutazione in background.
+- `src/neurosymbolic_ai/report_pdf.py`: esportazione PDF del risultato e della motivazione.
+- `tests/test_gui_pdf.py`: test aggiuntivi per interfaccia ed esportazione.
 - `pyproject.toml`: metadati, dipendenze e build; `pyproject` rimanda a questo file.
 - `.python-version`: interprete usato da uv; `uv.lock`: dipendenze risolte da uv.
 
